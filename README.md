@@ -4,11 +4,11 @@ Uma aula interativa, em português, para aprender funções callback em JavaScri
 
 ## Como abrir
 
-Abra `aula_de_callback_javascript.html` em um navegador atualizado. A página carrega o Tailwind CSS e as fontes do Google Fonts pela internet; sem conexão, o conteúdo continua disponível, mas parte da aparência pode mudar.
+Abra `index.html` em um navegador atualizado. No GitHub Pages, esse arquivo é carregado automaticamente como página inicial. A página carrega o Tailwind CSS e as fontes do Google Fonts pela internet; sem conexão, o conteúdo continua disponível, mas parte da aparência pode mudar.
 
 ## Organização dos arquivos
 
-- `aula_de_callback_javascript.html`: conteúdo e estrutura da página.
+- `index.html`: conteúdo e estrutura da página inicial.
 - `styles.css`: estilos personalizados da aula.
 - `navigation.js`: troca entre as seções e atualização do progresso.
 - `simulation.js`: etapas da simulação de callbacks.
