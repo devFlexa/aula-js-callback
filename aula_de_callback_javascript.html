@@ -1,0 +1,1403 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="h-full bg-slate-900 text-slate-100">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aprenda Funções Callback em JavaScript</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['Fira Code', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              500: '#0ea5e9',
+              600: '#0284c7',
+              700: '#0369a1',
+              accent: '#f59e0b',
+              js: '#f7df1e'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="h-full flex flex-col font-sans antialiased selection:bg-amber-400 selection:text-slate-900">
+
+  <!-- Header / Navigation -->
+  <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 bg-brand-js rounded-lg flex items-center justify-center font-extrabold text-slate-950 text-xl shadow-lg shadow-amber-500/10">
+          JS
+        </div>
+        <div>
+          <h1 class="text-lg font-bold text-slate-100 flex items-center gap-2">
+            Desvendando Callbacks
+            <span class="text-xs bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded-full font-medium">Iniciante</span>
+          </h1>
+          <p class="text-xs text-slate-400">Guia Prático e Interativo de JavaScript</p>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="hidden md:flex space-x-1 bg-slate-900 p-1 rounded-xl border border-slate-800 text-sm font-medium">
+        <button onclick="switchTab('teoria')" id="tab-teoria" class="px-4 py-1.5 rounded-lg transition-all text-amber-400 bg-slate-800 shadow">
+          1. Conceito & Analogia
+        </button>
+        <button onclick="switchTab('visualizador')" id="tab-visualizador" class="px-4 py-1.5 rounded-lg transition-all text-slate-400 hover:text-slate-200">
+          2. Fluxo Visual
+        </button>
+        <button onclick="switchTab('playground')" id="tab-playground" class="px-4 py-1.5 rounded-lg transition-all text-slate-400 hover:text-slate-200">
+          3. Playground Vivo
+        </button>
+        <button onclick="switchTab('exercicios')" id="tab-exercicios" class="px-4 py-1.5 rounded-lg transition-all text-slate-400 hover:text-slate-200">
+          4. Exercícios Práticos
+        </button>
+        <button onclick="switchTab('quiz')" id="tab-quiz" class="px-4 py-1.5 rounded-lg transition-all text-slate-400 hover:text-slate-200">
+          5. Quiz Final
+        </button>
+      </nav>
+
+      <div class="flex items-center space-x-2">
+        <span class="text-xs text-slate-400 font-mono hidden sm:inline">Progresso:</span>
+        <div class="w-24 bg-slate-800 rounded-full h-2.5 overflow-hidden border border-slate-700">
+          <div id="progress-bar" class="bg-gradient-to-r from-amber-400 to-amber-500 h-2.5 rounded-full w-1/5 transition-all duration-500"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile Nav Bar -->
+    <div class="md:hidden flex overflow-x-auto border-t border-slate-800/80 px-2 py-2 gap-2 text-xs font-medium no-scrollbar">
+      <button onclick="switchTab('teoria')" id="mob-tab-teoria" class="px-3 py-1.5 rounded-lg bg-slate-800 text-amber-400 whitespace-nowrap">1. Conceito</button>
+      <button onclick="switchTab('visualizador')" id="mob-tab-visualizador" class="px-3 py-1.5 rounded-lg bg-slate-900 text-slate-400 whitespace-nowrap">2. Visualizador</button>
+      <button onclick="switchTab('playground')" id="mob-tab-playground" class="px-3 py-1.5 rounded-lg bg-slate-900 text-slate-400 whitespace-nowrap">3. Playground</button>
+      <button onclick="switchTab('exercicios')" id="mob-tab-exercicios" class="px-3 py-1.5 rounded-lg bg-slate-900 text-slate-400 whitespace-nowrap">4. Exercícios</button>
+      <button onclick="switchTab('quiz')" id="mob-tab-quiz" class="px-3 py-1.5 rounded-lg bg-slate-900 text-slate-400 whitespace-nowrap">5. Quiz</button>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+
+    <!-- SECTION 1: TEORIA E ANALOGIA -->
+    <section id="sec-teoria" class="space-y-8 animate-fadeIn">
+      <!-- Hero Intro Banner -->
+      <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 border border-slate-800 p-6 sm:p-10">
+        <div class="absolute -top-24 -right-24 w-72 h-72 bg-amber-500/10 rounded-full blur-3xl pointer-events-none animate-pulse-glow"></div>
+        <div class="max-w-3xl">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20 mb-4">
+            🎓 O que você vai aprender hoje
+          </span>
+          <h2 class="text-3xl sm:text-4xl font-black text-white tracking-tight mb-4">
+            O que é uma Função <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-yellow-200">Callback</span>?
+          </h2>
+          <p class="text-slate-300 text-base sm:text-lg leading-relaxed mb-6">
+            Em JavaScript, funções são <strong>cidadãs de primeira classe</strong>. Isso significa que você pode tratar uma função como qualquer outro valor: pode guardá-la em uma variável e, o mais importante, <span class="text-amber-300 font-semibold">passar uma função como parâmetro para outra função!</span>
+          </p>
+          <div class="p-4 bg-slate-900/80 rounded-xl border border-amber-500/30 text-slate-200 text-sm font-medium flex items-start gap-3">
+            <span class="text-amber-400 text-xl">💡</span>
+            <p>
+              <strong>Definição Simples:</strong> Callback (literalmente "chamar de volta") é uma função que é passada a outra função com a instrução: <em>"Guarde esta função e execute-a mais tarde, quando terminar certa tarefa"</em>.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Real World Analogy Cards -->
+      <div>
+        <h3 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+          <span>🍕</span> Analogias do Mundo Real
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          
+          <!-- Analogy 1: Pizza -->
+          <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 hover:border-slate-700 transition">
+            <div class="w-12 h-12 bg-amber-500/10 rounded-xl flex items-center justify-center text-2xl mb-4 border border-amber-500/20">
+              🍕
+            </div>
+            <h4 class="text-lg font-bold text-amber-300 mb-2">1. O Pedido de Pizza</h4>
+            <p class="text-slate-300 text-sm leading-relaxed mb-4">
+              Imagine que você liga para a pizzaria. Você faz o pedido e deixa seu <strong>número de telefone</strong> (seu callback).
+            </p>
+            <ul class="space-y-2 text-xs text-slate-400 font-mono bg-slate-900 p-3 rounded-lg border border-slate-800">
+              <li class="flex items-center gap-2"><span class="text-emerald-400">✓</span> Pedido enviado ➜ A pizzaria assa a pizza</li>
+              <li class="flex items-center gap-2"><span class="text-emerald-400">✓</span> Pizza fica pronta ➜ A pizzaria liga de volta (Callback!)</li>
+              <li class="flex items-center gap-2"><span class="text-emerald-400">✓</span> Você atende e come a pizza</li>
+            </ul>
+          </div>
+
+          <!-- Analogy 2: Alarm / Messenger -->
+          <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 hover:border-slate-700 transition">
+            <div class="w-12 h-12 bg-sky-500/10 rounded-xl flex items-center justify-center text-2xl mb-4 border border-sky-500/20">
+              ⏰
+            </div>
+            <h4 class="text-lg font-bold text-sky-300 mb-2">2. O Despertador de Tarefas</h4>
+            <p class="text-slate-300 text-sm leading-relaxed mb-4">
+              Você programa o alarme do celular para tocar às 07:00 com uma instrução: <strong>"Tocar a música do Rocky Balboa"</strong>.
+            </p>
+            <ul class="space-y-2 text-xs text-slate-400 font-mono bg-slate-900 p-3 rounded-lg border border-slate-800">
+              <li class="flex items-center gap-2"><span class="text-sky-400">✓</span> O tempo passa... (Processamento em segundo plano)</li>
+              <li class="flex items-center gap-2"><span class="text-sky-400">✓</span> Chega 07:00 ➜ O alarme aciona a música (Callback)</li>
+              <li class="flex items-center gap-2"><span class="text-sky-400">✓</span> Você acorda motivado!</li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Syntax Breakdown -->
+      <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 sm:p-8">
+        <h3 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+          <span>⚙️</span> A Sintaxe Básica no JavaScript
+        </h3>
+        <p class="text-slate-300 text-sm mb-6">
+          Observe a diferença entre <strong>definir uma função callback</strong>, <strong>passar a função como parâmetro</strong> e <strong>receber/executar</strong> ela.
+        </p>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div class="space-y-3">
+            <span class="text-xs font-mono text-amber-400 uppercase tracking-wider">Código Exemplo:</span>
+            <pre class="bg-slate-900 border border-slate-800 p-4 rounded-xl text-xs sm:text-sm font-mono text-slate-200 overflow-x-auto leading-relaxed">
+<span class="text-purple-400">function</span> <span class="text-blue-400">saudar</span>(nome) {
+  <span class="text-emerald-400">console</span>.log(<span class="text-amber-300">`Olá, ${nome}!`</span>);
+}
+
+<span class="text-purple-400">function</span> <span class="text-blue-400">processarUsuario</span>(callback) {
+  <span class="text-purple-400">const</span> nome = <span class="text-amber-300">"Maria"</span>;
+  <span class="text-slate-500">// Executando o callback recebido:</span>
+  <span class="text-yellow-400">callback</span>(nome); 
+}
+
+<span class="text-slate-500">// Passamos saudar SEM os parênteses ()</span>
+processarUsuario(<span class="text-yellow-400">saudar</span>);</pre>
+          </div>
+
+          <div class="space-y-3 flex flex-col justify-center">
+            <div class="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 space-y-2">
+              <h5 class="text-sm font-bold text-amber-300 flex items-center gap-1.5">
+                ⚠️ Erro muito comum de iniciantes!
+              </h5>
+              <p class="text-xs text-slate-300 leading-relaxed">
+                Nunca passe o callback executando-o com parênteses <code>saudar()</code> ao passar como parâmetro!
+              </p>
+              <div class="text-xs font-mono bg-slate-900 p-2 rounded text-red-400 border border-red-900/50">
+                ❌ processarUsuario(saudar()); // Errado! Executa imediatamente.
+              </div>
+              <div class="text-xs font-mono bg-slate-900 p-2 rounded text-emerald-400 border border-emerald-900/50">
+                ✅ processarUsuario(saudar); // Certo! Passa a função como receita.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Expanded Real World JS Examples Grid -->
+      <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 sm:p-8">
+        <h3 class="text-xl font-bold text-white mb-2 flex items-center gap-2">
+          <span>📚</span> Onde os Callbacks São Usados no Dia a Dia? (9 Exemplos Práticos)
+        </h3>
+        <p class="text-slate-300 text-sm mb-6">
+          Você usará callbacks a todo momento em projetos reais de JavaScript. Veja os casos mais comuns:
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          
+          <!-- Example 1: addEventListener -->
+          <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-sm text-amber-300">1. Escutar Eventos (DOM)</span>
+              <span class="text-[10px] font-mono bg-amber-500/10 text-amber-400 px-2 py-0.5 rounded">Eventos</span>
+            </div>
+            <p class="text-xs text-slate-400">A função só é executada quando o usuário clica no botão.</p>
+            <pre class="bg-slate-950 p-3 rounded-lg text-xs font-mono text-slate-200 overflow-x-auto"><span class="text-purple-400">const</span> botao = <span class="text-emerald-400">document</span>.querySelector(<span class="text-amber-300">'#btn'</span>);
+
+botao.<span class="text-blue-400">addEventListener</span>(<span class="text-amber-300">'click'</span>, <span class="text-purple-400">function</span>() {
+  <span class="text-emerald-400">console</span>.log(<span class="text-amber-300">'Clicou!'</span>);
+});</pre>
+          </div>
+
+          <!-- Example 2: Array.map / filter -->
+          <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-sm text-sky-300">2. Mapear e Filtrar Listas</span>
+              <span class="text-[10px] font-mono bg-sky-500/10 text-sky-400 px-2 py-0.5 rounded">Arrays</span>
+            </div>
+            <p class="text-xs text-slate-400">Passamos um callback para dizer como filtrar os itens.</p>
+            <pre class="bg-slate-950 p-3 rounded-lg text-xs font-mono text-slate-200 overflow-x-auto"><span class="text-purple-400">const</span> notas = [<span class="text-amber-300">4</span>, <span class="text-amber-300">7</span>, <span class="text-amber-300">9</span>, <span class="text-amber-300">2</span>, <span class="text-amber-300">10</span>];
+
+<span class="text-purple-400">const</span> aprovados = notas.<span class="text-blue-400">filter</span>(n => n >= <span class="text-amber-300">7</span>);
+<span class="text-emerald-400">console</span>.log(aprovados); <span class="text-slate-500">// [7, 9, 10]</span></pre>
+          </div>
+
+          <!-- Example 3: Repetição / Temporizador -->
+          <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-sm text-emerald-300">3. Temporizadores</span>
+              <span class="text-[10px] font-mono bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded">Timer</span>
+            </div>
+            <p class="text-xs text-slate-400">Executa o callback repetidamente a cada intervalo.</p>
+            <pre class="bg-slate-950 p-3 rounded-lg text-xs font-mono text-slate-200 overflow-x-auto"><span class="text-purple-400">let</span> sec = <span class="text-amber-300">0</span>;
+<span class="text-blue-400">setInterval</span>(() => {
+  sec++;
+  <span class="text-emerald-400">console</span>.log(<span class="text-amber-300">`Tempo: ${sec}s`</span>);
+}, <span class="text-amber-300">1000</span>);</pre>
+          </div>
+
+          <!-- Example 4: Tratar Sucesso e Erro -->
+          <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-sm text-purple-300">4. Callbacks de Resultado</span>
+              <span class="text-[10px] font-mono bg-purple-500/10 text-purple-400 px-2 py-0.5 rounded">Lógica</span>
+            </div>
+            <p class="text-xs text-slate-400">Um callback para sucesso e outro para tratar falha.</p>
+            <pre class="bg-slate-950 p-3 rounded-lg text-xs font-mono text-slate-200 overflow-x-auto"><span class="text-purple-400">function</span> <span class="text-blue-400">login</span>(usr, <span class="text-yellow-400">onOk</span>, <span class="text-red-400">onErr</span>) {
+  usr === <span class="text-amber-300">"admin"</span> ? <span class="text-yellow-400">onOk</span>() : <span class="text-red-400">onErr</span>();
+}</pre>
+          </div>
+
+          <!-- Example 5: Array.find -->
+          <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-sm text-pink-300">5. Encontrar Elemento (.find)</span>
+              <span class="text-[10px] font-mono bg-pink-500/10 text-pink-400 px-2 py-0.5 rounded">Busca</span>
+            </div>
+            <p class="text-xs text-slate-400">Callback testa cada item até achar o primeiro correspondente.</p>
+            <pre class="bg-slate-950 p-3 rounded-lg text-xs font-mono text-slate-200 overflow-x-auto"><span class="text-purple-400">const</span> users = [{id: <span class="text-amber-300">1</span>}, {id: <span class="text-amber-300">2</span>}];
+<span class="text-purple-400">const</span> user = users.<span class="text-blue-400">find</span>(u => u.id === <span class="text-amber-300">2</span>);
+<span class="text-emerald-400">console</span>.log(user); <span class="text-slate-500">// {id: 2}</span></pre>
+          </div>
+
+          <!-- Example 6: Array.sort -->
+          <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-sm text-amber-400">6. Ordenação Customizada (.sort)</span>
+              <span class="text-[10px] font-mono bg-amber-500/10 text-amber-400 px-2 py-0.5 rounded">Array</span>
+            </div>
+            <p class="text-xs text-slate-400">O callback compara dois itens para definir a ordem crescente/decrescente.</p>
+            <pre class="bg-slate-950 p-3 rounded-lg text-xs font-mono text-slate-200 overflow-x-auto"><span class="text-purple-400">const</span> nums = [<span class="text-amber-300">40</span>, <span class="text-amber-300">100</span>, <span class="text-amber-300">1</span>, <span class="text-amber-300">5</span>];
+nums.<span class="text-blue-400">sort</span>((a, b) => a - b);
+<span class="text-emerald-400">console</span>.log(nums); <span class="text-slate-500">// [1, 5, 40, 100]</span></pre>
+          </div>
+
+          <!-- Example 7: Array.reduce -->
+          <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-sm text-teal-300">7. Acumular Valores (.reduce)</span>
+              <span class="text-[10px] font-mono bg-teal-500/10 text-teal-400 px-2 py-0.5 rounded">Soma</span>
+            </div>
+            <p class="text-xs text-slate-400">Soma ou combina itens de uma lista em um valor final.</p>
+            <pre class="bg-slate-950 p-3 rounded-lg text-xs font-mono text-slate-200 overflow-x-auto"><span class="text-purple-400">const</span> valores = [<span class="text-amber-300">10</span>, <span class="text-amber-300">20</span>, <span class="text-amber-300">30</span>];
+<span class="text-purple-400">const</span> total = valores.<span class="text-blue-400">reduce</span>((acc, val) => acc + val, <span class="text-amber-300">0</span>);
+<span class="text-emerald-400">console</span>.log(total); <span class="text-slate-500">// 60</span></pre>
+          </div>
+
+          <!-- Example 8: Array.some / every -->
+          <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-sm text-indigo-300">8. Validação de Lista (.some / .every)</span>
+              <span class="text-[10px] font-mono bg-indigo-500/10 text-indigo-400 px-2 py-0.5 rounded">Checagem</span>
+            </div>
+            <p class="text-xs text-slate-400">Verifica se algum ou todos os elementos atendem uma regra.</p>
+            <pre class="bg-slate-950 p-3 rounded-lg text-xs font-mono text-slate-200 overflow-x-auto"><span class="text-purple-400">const</span> idades = [<span class="text-amber-300">18</span>, <span class="text-amber-300">22</span>, <span class="text-amber-300">15</span>];
+<span class="text-purple-400">const</span> temMenor = idades.<span class="text-blue-400">some</span>(id => id < <span class="text-amber-300">18</span>);
+<span class="text-emerald-400">console</span>.log(temMenor); <span class="text-slate-500">// true</span></pre>
+          </div>
+
+          <!-- Example 9: String.replace com callback -->
+          <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-sm text-rose-300">9. Substituição de Texto Customizada</span>
+              <span class="text-[10px] font-mono bg-rose-500/10 text-rose-400 px-2 py-0.5 rounded">String</span>
+            </div>
+            <p class="text-xs text-slate-400">Aplica lógica customizada para cada trecho substituído.</p>
+            <pre class="bg-slate-950 p-3 rounded-lg text-xs font-mono text-slate-200 overflow-x-auto"><span class="text-purple-400">const</span> texto = <span class="text-amber-300">"olá mundo javascript"</span>;
+<span class="text-purple-400">const</span> formatado = texto.<span class="text-blue-400">replace</span>(<span class="text-amber-300">/\b\w/g</span>, char => char.<span class="text-blue-400">toUpperCase</span>());
+<span class="text-emerald-400">console</span>.log(formatado); <span class="text-slate-500">// "Olá Mundo Javascript"</span></pre>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: FLUXO VISUAL INTERATIVO -->
+    <section id="sec-visualizador" class="hidden space-y-8 animate-fadeIn">
+      <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 sm:p-8">
+        <div class="max-w-2xl mb-6">
+          <h2 class="text-2xl font-bold text-white mb-2">Simulador do Fluxo de Execução</h2>
+          <p class="text-slate-400 text-sm">
+            Clique no botão de simulação para acompanhar passo a passo como o JavaScript passa o controle para a função principal e depois "chama de volta" (callback) a função secundária.
+          </p>
+        </div>
+
+        <!-- Animation Visual Canvas Box -->
+        <div class="bg-slate-900 rounded-2xl border border-slate-800 p-6 relative overflow-hidden">
+          
+          <!-- Stepper Controls -->
+          <div class="flex flex-wrap items-center justify-between gap-4 mb-8 border-b border-slate-800 pb-4">
+            <div class="flex items-center gap-2">
+              <button id="sim-btn-start" onclick="startSimulation()" class="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs sm:text-sm rounded-lg transition flex items-center gap-2 shadow-lg shadow-amber-500/20">
+                <span>▶</span> Iniciar Animação
+              </button>
+              <button id="sim-btn-next" onclick="nextSimStep()" disabled class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs sm:text-sm font-medium rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed">
+                Próximo Passo ➜
+              </button>
+            </div>
+            <span id="sim-status-text" class="text-xs font-mono text-amber-400 bg-amber-500/10 border border-amber-500/20 px-3 py-1 rounded-full">
+              Aguardando início...
+            </span>
+          </div>
+
+          <!-- Flow Diagram Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+            
+            <!-- Box 1: Chamador -->
+            <div id="flow-box-1" class="p-5 rounded-xl bg-slate-950 border border-slate-800 transition-all duration-500 opacity-60">
+              <div class="text-xs font-mono text-slate-400 mb-2">Etapa 1: Início</div>
+              <div class="font-bold text-amber-400 text-sm mb-1">Chamada Principal</div>
+              <p class="text-xs text-slate-400"><code>processarPedido(callback)</code></p>
+              <div id="badge-step-1" class="mt-3 hidden text-[11px] bg-amber-500/20 text-amber-300 p-1.5 rounded font-mono">
+                Passando a receita do Callback...
+              </div>
+            </div>
+
+            <!-- Box 2: Função Principal -->
+            <div id="flow-box-2" class="p-5 rounded-xl bg-slate-950 border border-slate-800 transition-all duration-500 opacity-60">
+              <div class="text-xs font-mono text-slate-400 mb-2">Etapa 2: Processamento</div>
+              <div class="font-bold text-sky-400 text-sm mb-1">Função Receptora</div>
+              <p class="text-xs text-slate-400">Executa lógica principal (ex: assar pizza / buscar dados)</p>
+              <div id="badge-step-2" class="mt-3 hidden text-[11px] bg-sky-500/20 text-sky-300 p-1.5 rounded font-mono">
+                Trabalhando... (Aguarde)
+              </div>
+            </div>
+
+            <!-- Box 3: O Callback Executado -->
+            <div id="flow-box-3" class="p-5 rounded-xl bg-slate-950 border border-slate-800 transition-all duration-500 opacity-60">
+              <div class="text-xs font-mono text-slate-400 mb-2">Etapa 3: Retorno</div>
+              <div class="font-bold text-emerald-400 text-sm mb-1">Callback Invocado!</div>
+              <p class="text-xs text-slate-400"><code>callback(resultado)</code> é chamado!</p>
+              <div id="badge-step-3" class="mt-3 hidden text-[11px] bg-emerald-500/20 text-emerald-300 p-1.5 rounded font-mono">
+                ✨ Tarefa Finalizada!
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Code Trace Panel -->
+          <div class="mt-6 bg-slate-950 p-4 rounded-xl border border-slate-800">
+            <span class="text-xs font-mono text-slate-500 block mb-2">// O que está acontecendo no código:</span>
+            <div id="sim-code-desc" class="text-xs sm:text-sm font-mono text-slate-300 min-h-[40px] flex items-center">
+              Clique em "Iniciar Animação" para ver a jornada de um callback passo a passo.
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: PLAYGROUND VIVO -->
+    <section id="sec-playground" class="hidden space-y-6 animate-fadeIn">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h2 class="text-2xl font-bold text-white">Playground Interativo JavaScript</h2>
+          <p class="text-slate-400 text-sm">Experimente editar o código abaixo e execute para ver o resultado no console!</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <button onclick="loadTemplate('basico')" class="px-3 py-1.5 text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg border border-slate-700 transition">
+            1. Básico
+          </button>
+          <button onclick="loadTemplate('timeout')" class="px-3 py-1.5 text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg border border-slate-700 transition">
+            2. setTimeout
+          </button>
+          <button onclick="loadTemplate('array')" class="px-3 py-1.5 text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg border border-slate-700 transition">
+            3. forEach
+          </button>
+          <button onclick="loadTemplate('mapFilter')" class="px-3 py-1.5 text-xs bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/30 transition">
+            4. Map & Filter
+          </button>
+          <button onclick="loadTemplate('interval')" class="px-3 py-1.5 text-xs bg-slate-800 hover:bg-slate-700 text-sky-300 border border-sky-500/30 transition">
+            5. setInterval
+          </button>
+          <button onclick="loadTemplate('sucessoErro')" class="px-3 py-1.5 text-xs bg-slate-800 hover:bg-slate-700 text-purple-300 border border-purple-500/30 transition">
+            6. Sucesso / Erro
+          </button>
+        </div>
+      </div>
+
+      <!-- Editor & Console Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        
+        <!-- Code Editor Box -->
+        <div class="bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden flex flex-col h-[480px]">
+          <div class="bg-slate-900 px-4 py-3 border-b border-slate-800 flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+              <div class="w-3 h-3 rounded-full bg-red-500/80"></div>
+              <div class="w-3 h-3 rounded-full bg-amber-500/80"></div>
+              <div class="w-3 h-3 rounded-full bg-emerald-500/80"></div>
+              <span class="text-xs font-mono text-slate-400 ml-2">script.js</span>
+            </div>
+            <button onclick="runPlayground()" class="px-4 py-1.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs rounded-lg transition flex items-center gap-1.5 shadow-md shadow-emerald-500/20">
+              <span>▶</span> Executar Código
+            </button>
+          </div>
+          <div class="relative flex-1">
+            <textarea id="playground-code" class="w-full h-full bg-slate-950 text-amber-200 font-mono text-xs sm:text-sm p-4 outline-none resize-none leading-relaxed code-editor" spellcheck="false">// 1. Definimos uma função de saudação
+function saudarComEntusiasmo(nome) {
+  console.log("🚀 VAMOS LÁ, " + nome.toUpperCase() + "!");
+}
+
+// 2. Criamos uma função que recebe o callback
+function prepararAluno(nomeAluno, meuCallback) {
+  console.log("Iniciando aula para: " + nomeAluno);
+  console.log("Chamando a função de callback...");
+  
+  // Executa o callback passando o nome
+  meuCallback(nomeAluno);
+}
+
+// 3. Executamos passando saudarComEntusiasmo como callback
+prepararAluno("Dev Iniciante", saudarComEntusiasmo);</textarea>
+          </div>
+        </div>
+
+        <!-- Console Output Box -->
+        <div class="bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden flex flex-col h-[480px]">
+          <div class="bg-slate-900 px-4 py-3 border-b border-slate-800 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono font-semibold text-slate-300">Terminal / Console.log</span>
+            </div>
+            <button onclick="clearConsole('playground-console')" class="text-xs text-slate-400 hover:text-slate-200 transition">
+              Limpar Console
+            </button>
+          </div>
+          <div id="playground-console" class="flex-1 bg-slate-950 p-4 font-mono text-xs text-emerald-400 overflow-y-auto space-y-2 leading-relaxed">
+            <div class="text-slate-600 italic">// O resultado da execução do console.log aparecerá aqui...</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION 4: EXERCÍCIOS PRÁTICOS -->
+    <section id="sec-exercicios" class="hidden space-y-8 animate-fadeIn">
+      <div>
+        <h2 class="text-2xl font-bold text-white mb-1">Exercícios Práticos Dirigidos (10 Desafios)</h2>
+        <p class="text-slate-400 text-sm">Coloque a mão na massa! Complete o código de cada exercício para fazer os testes passarem.</p>
+      </div>
+
+      <!-- Exercise Cards Container -->
+      <div class="space-y-8">
+        
+        <!-- Exercise 1 -->
+        <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+            <div>
+              <span class="text-xs font-mono text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-full border border-amber-500/20">Exercício 1 de 10</span>
+              <h3 class="text-lg font-bold text-white mt-2">Calculadora Flexível com Callbacks</h3>
+            </div>
+            <span id="ex1-status" class="text-xs font-mono px-3 py-1 rounded-full bg-slate-800 text-slate-400 border border-slate-700 w-max">
+              Pendente
+            </span>
+          </div>
+
+          <p class="text-slate-300 text-sm mb-4">
+            Crie uma função chamada <code>executarOperacao(a, b, operacaoCallback)</code> que receba dois números e retorne o resultado de chamar a função <code>operacaoCallback(a, b)</code>.
+          </p>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div class="space-y-2">
+              <label class="text-xs font-mono text-slate-400">Seu Código:</label>
+              <textarea id="ex1-code" class="w-full h-44 bg-slate-900 border border-slate-800 rounded-xl p-3 font-mono text-xs text-amber-200 outline-none resize-none leading-relaxed" spellcheck="false">// Complete a função abaixo:
+function somar(n1, n2) {
+  return n1 + n2;
+}
+
+function executarOperacao(a, b, operacaoCallback) {
+  // SEU CÓDIGO AQUI: chame operacaoCallback com os parâmetros a e b
+  return operacaoCallback(a, b);
+}
+
+// Teste:
+console.log(executarOperacao(10, 5, somar));</textarea>
+              <button onclick="runExercise(1)" class="w-full py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-lg transition shadow-md shadow-amber-500/20">
+                Verificar Resposta
+              </button>
+            </div>
+
+            <div class="space-y-2">
+              <label class="text-xs font-mono text-slate-400">Saída do Console & Feedback:</label>
+              <div id="ex1-console" class="h-44 bg-slate-900 border border-slate-800 rounded-xl p-3 font-mono text-xs text-emerald-400 overflow-y-auto">
+                <span class="text-slate-600 italic">// Clique em "Verificar Resposta" para testar...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Exercise 2 -->
+        <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+            <div>
+              <span class="text-xs font-mono text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-full border border-amber-500/20">Exercício 2 de 10</span>
+              <h3 class="text-lg font-bold text-white mt-2">O Processador de Nomes</h3>
+            </div>
+            <span id="ex2-status" class="text-xs font-mono px-3 py-1 rounded-full bg-slate-800 text-slate-400 border border-slate-700 w-max">
+              Pendente
+            </span>
+          </div>
+
+          <p class="text-slate-300 text-sm mb-4">
+            Dada a função <code>formatarNome(nome)</code>, chame a função <code>processarLista(lista, callback)</code> passando a lista de alunos e o callback <code>formatarNome</code>.
+          </p>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div class="space-y-2">
+              <label class="text-xs font-mono text-slate-400">Seu Código:</label>
+              <textarea id="ex2-code" class="w-full h-48 bg-slate-900 border border-slate-800 rounded-xl p-3 font-mono text-xs text-amber-200 outline-none resize-none leading-relaxed" spellcheck="false">function formatarNome(nome) {
+  return "Aluno: " + nome;
+}
+
+function processarLista(lista, callback) {
+  for (let i = 0; i < lista.length; i++) {
+    console.log(callback(lista[i]));
+  }
+}
+
+const alunos = ["Ana", "Carlos", "Beatriz"];
+
+// Chame processarLista enviando 'alunos' e 'formatarNome':
+processarLista(alunos, formatarNome);</textarea>
+              <button onclick="runExercise(2)" class="w-full py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-lg transition shadow-md shadow-amber-500/20">
+                Verificar Resposta
+              </button>
+            </div>
+
+            <div class="space-y-2">
+              <label class="text-xs font-mono text-slate-400">Saída do Console & Feedback:</label>
+              <div id="ex2-console" class="h-48 bg-slate-900 border border-slate-800 rounded-xl p-3 font-mono text-xs text-emerald-400 overflow-y-auto">
+                <span class="text-slate-600 italic">// Clique em "Verificar Resposta" para testar...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Exercise 3 -->
+        <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+            <div>
+              <span class="text-xs font-mono text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-full border border-amber-500/20">Exercício 3 de 10</span>
+              <h3 class="text-lg font-bold text-white mt-2">Simulação de Notificação Assíncrona</h3>
+            </div>
+            <span id="ex3-status" class="text-xs font-mono px-3 py-1 rounded-full bg-slate-800 text-slate-400 border border-slate-700 w-max">
+              Pendente
+            </span>
+          </div>
+
+          <p class="text-slate-300 text-sm mb-4">
+            Use <code>setTimeout</code> dentro da função <code>baixarArquivo(nomeArquivo, callbackFinal)</code> para aguardar 1 segundo e executar o callback final.
+          </p>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div class="space-y-2">
+              <label class="text-xs font-mono text-slate-400">Seu Código:</label>
+              <textarea id="ex3-code" class="w-full h-48 bg-slate-900 border border-slate-800 rounded-xl p-3 font-mono text-xs text-amber-200 outline-none resize-none leading-relaxed" spellcheck="false">function baixarArquivo(nomeArquivo, callbackFinal) {
+  console.log("Iniciando download...");
+  
+  // Use setTimeout para esperar 1000ms e depois chamar callbackFinal:
+  setTimeout(function() {
+    callbackFinal("Download de " + nomeArquivo + " concluído!");
+  }, 1000);
+}
+
+baixarArquivo("aula1.pdf", function(mensagem) {
+  console.log("NOTIFICAÇÃO: " + mensagem);
+});</textarea>
+              <button onclick="runExercise(3)" class="w-full py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-lg transition shadow-md shadow-amber-500/20">
+                Verificar Resposta
+              </button>
+            </div>
+
+            <div class="space-y-2">
+              <label class="text-xs font-mono text-slate-400">Saída do Console & Feedback:</label>
+              <div id="ex3-console" class="h-48 bg-slate-900 border border-slate-800 rounded-xl p-3 font-mono text-xs text-emerald-400 overflow-y-auto">
+                <span class="text-slate-600 italic">// Clique em "Verificar Resposta" para testar...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Exercise 4 -->
+        <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+            <div>
+              <span class="text-xs font-mono text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-full border border-amber-500/20">Exercício 4 de 10</span>
+              <h3 class="text-lg font-bold text-white mt-2">Filtro Customizado de Números</h3>
+            </div>
+            <span id="ex4-status" class="text-xs font-mono px-3 py-1 rounded-full bg-slate-800 text-slate-400 border border-slate-700 w-max">
+              Pendente
+            </span>
+          </div>
+
+          <p class="text-slate-300 text-sm mb-4">
+            Crie uma função <code>filtrarNumeros(lista, callbackCondicao)</code> que percorra a lista e retorne um novo array apenas com os itens para os quais <code>callbackCondicao(item)</code> retornar <code>true</code>.
+          </p>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div class="space-y-2">
+              <label class="text-xs font-mono text-slate-400">Seu Código:</label>
+              <textarea id="ex4-code" class="w-full h-48 bg-slate-900 border border-slate-800 rounded-xl p-3 font-mono text-xs text-amber-200 outline-none resize-none leading-relaxed" spellcheck="false">function ePar(num) {
+  return num % 2 === 0;
+}
+
+function filtrarNumeros(lista, callbackCondicao) {
+  const resultado = [];
+  for (let i = 0; i < lista.length; i++) {
+    // Chame callbackCondicao(lista[i]) e adicione ao resultado se der true:
+    if (callbackCondicao(lista[i])) {
+      resultado.push(lista[i]);
+    }
+  }
+  return resultado;
+}
+
+const numeros = [1, 2, 3, 4, 5, 6];
+console.log(filtrarNumeros(numeros, ePar));</textarea>
+              <button onclick="runExercise(4)" class="w-full py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-lg transition shadow-md shadow-amber-500/20">
+                Verificar Resposta
+              </button>
+            </div>
+
+            <div class="space-y-2">
+              <label class="text-xs font-mono text-slate-400">Saída do Console & Feedback:</label>
+              <div id="ex4-console" class="h-48 bg-slate-900 border border-slate-800 rounded-xl p-3 font-mono text-xs text-emerald-400 overflow-y-auto">
+                <span class="text-slate-600 italic">// Clique em "Verificar Resposta" para testar...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Exercise 5 -->
+        <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+            <div>
+              <span class="text-xs font-mono text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-full border border-amber-500/20">Exercício 5 de 10</span>
+              <h3 class="text-lg font-bold text-white mt-2">Transformador de Preços (Array.map)</h3>
+            </div>
+            <span id="ex5-status" class="text-xs font-mono px-3 py-1 rounded-full bg-slate-800 text-slate-400 border border-slate-700 w-max">
+              Pendente
+            </span>
+          </div>
+
+          <p class="text-slate-300 text-sm mb-4">
+            Use o método nativo <code>.map()</code> passando um callback no formato arrow function para aplicar 10% de desconto em cada item da lista de preços (multiplicar por 0.9).
+          </p>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div class="space-y-2">
+              <label class="text-xs font-mono text-slate-400">Seu Código:</label>
+              <textarea id="ex5-code" class="w-full h-48 bg-slate-900 border border-slate-800 rounded-xl p-3 font-mono text-xs text-amber-200 outline-none resize-none leading-relaxed" spellcheck="false">const precos = [100, 200, 50, 300];
+
+// Use precos.map(...) com um callback que retorna o preco com 10% de desconto (preco * 0.9):
+const precosComDesconto = precos.map(preco => preco * 0.9);
+
+console.log(precosComDesconto);</textarea>
+              <button onclick="runExercise(5)" class="w-full py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-lg transition shadow-md shadow-amber-500/20">
+                Verificar Resposta
+              </button>
+            </div>
+
+            <div class="space-y-2">
+              <label class="text-xs font-mono text-slate-400">Saída do Console & Feedback:</label>
+              <div id="ex5-console" class="h-48 bg-slate-900 border border-slate-800 rounded-xl p-3 font-mono text-xs text-emerald-400 overflow-y-auto">
+                <span class="text-slate-600 italic">// Clique em "Verificar Resposta" para testar...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Exercise 6 -->
+        <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+            <div>
+              <span class="text-xs font-mono text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-full border border-amber-500/20">Exercício 6 de 10</span>
+              <h3 class="text-lg font-bold text-white mt-2">Validador com Callbacks Duplos</h3>
+            </div>
+            <span id="ex6-status" class="text-xs font-mono px-3 py-1 rounded-full bg-slate-800 text-slate-400 border border-slate-700 w-max">
+              Pendente
+            </span>
+          </div>
+
+          <p class="text-slate-300 text-sm mb-4">
+            Complete a função <code>validarEmail(email, callbackSucesso, callbackErro)</code>. Se o email contiver o caractere <code>"@"</code>, invoque <code>callbackSucesso()</code>, senão invoque <code>callbackErro()</code>.
+          </p>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div class="space-y-2">
+              <label class="text-xs font-mono text-slate-400">Seu Código:</label>
+              <textarea id="ex6-code" class="w-full h-52 bg-slate-900 border border-slate-800 rounded-xl p-3 font-mono text-xs text-amber-200 outline-none resize-none leading-relaxed" spellcheck="false">function validarEmail(email, callbackSucesso, callbackErro) {
+  if (email.includes("@")) {
+    callbackSucesso("Email válido!");
+  } else {
+    callbackErro("Email inválido!");
+  }
+}
+
+function aoSucesso(msg) { console.log("✅ SUCESSO: " + msg); }
+function aoErro(msg) { console.log("❌ ERRO: " + msg); }
+
+// Testes:
+validarEmail("dev@javascript.com", aoSucesso, aoErro);
+validarEmail("emailsemarroba.com", aoSucesso, aoErro);</textarea>
+              <button onclick="runExercise(6)" class="w-full py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-lg transition shadow-md shadow-amber-500/20">
+                Verificar Resposta
+              </button>
+            </div>
+
+            <div class="space-y-2">
+              <label class="text-xs font-mono text-slate-400">Saída do Console & Feedback:</label>
+              <div id="ex6-console" class="h-52 bg-slate-900 border border-slate-800 rounded-xl p-3 font-mono text-xs text-emerald-400 overflow-y-auto">
+                <span class="text-slate-600 italic">// Clique em "Verificar Resposta" para testar...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Exercise 7 -->
+        <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+            <div>
+              <span class="text-xs font-mono text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-full border border-amber-500/20">Exercício 7 de 10</span>
+              <h3 class="text-lg font-bold text-white mt-2">Busca de Usuário (Array.find)</h3>
+            </div>
+            <span id="ex7-status" class="text-xs font-mono px-3 py-1 rounded-full bg-slate-800 text-slate-400 border border-slate-700 w-max">
+              Pendente
+            </span>
+          </div>
+
+          <p class="text-slate-300 text-sm mb-4">
+            Use o método <code>.find()</code> com um callback para encontrar o usuário com <code>id === 2</code> na lista de usuários.
+          </p>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div class="space-y-2">
+              <label class="text-xs font-mono text-slate-400">Seu Código:</label>
+              <textarea id="ex7-code" class="w-full h-48 bg-slate-900 border border-slate-800 rounded-xl p-3 font-mono text-xs text-amber-200 outline-none resize-none leading-relaxed" spellcheck="false">const usuarios = [
+  { id: 1, nome: "Alice" },
+  { id: 2, nome: "Bruno" },
+  { id: 3, nome: "Carla" }
+];
+
+// Use usuarios.find com um callback que retorna true quando u.id === 2:
+const usuarioEncontrado = usuarios.find(u => u.id === 2);
+
+console.log(usuarioEncontrado);</textarea>
+              <button onclick="runExercise(7)" class="w-full py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-lg transition shadow-md shadow-amber-500/20">
+                Verificar Resposta
+              </button>
+            </div>
+
+            <div class="space-y-2">
+              <label class="text-xs font-mono text-slate-400">Saída do Console & Feedback:</label>
+              <div id="ex7-console" class="h-48 bg-slate-900 border border-slate-800 rounded-xl p-3 font-mono text-xs text-emerald-400 overflow-y-auto">
+                <span class="text-slate-600 italic">// Clique em "Verificar Resposta" para testar...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Exercise 8 -->
+        <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+            <div>
+              <span class="text-xs font-mono text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-full border border-amber-500/20">Exercício 8 de 10</span>
+              <h3 class="text-lg font-bold text-white mt-2">Ordenação de Lista por Preço (.sort)</h3>
+            </div>
+            <span id="ex8-status" class="text-xs font-mono px-3 py-1 rounded-full bg-slate-800 text-slate-400 border border-slate-700 w-max">
+              Pendente
+            </span>
+          </div>
+
+          <p class="text-slate-300 text-sm mb-4">
+            Ordene os produtos do mais barato para o mais caro usando o método <code>.sort()</code> com uma função callback comparadora <code>(a, b) => a.preco - b.preco</code>.
+          </p>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div class="space-y-2">
+              <label class="text-xs font-mono text-slate-400">Seu Código:</label>
+              <textarea id="ex8-code" class="w-full h-48 bg-slate-900 border border-slate-800 rounded-xl p-3 font-mono text-xs text-amber-200 outline-none resize-none leading-relaxed" spellcheck="false">const produtos = [
+  { item: "Teclado", preco: 150 },
+  { item: "Mouse", preco: 80 },
+  { item: "Monitor", preco: 900 }
+];
+
+// Ordene os produtos do menor preco para o maior:
+produtos.sort((a, b) => a.preco - b.preco);
+
+console.log(produtos);</textarea>
+              <button onclick="runExercise(8)" class="w-full py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-lg transition shadow-md shadow-amber-500/20">
+                Verificar Resposta
+              </button>
+            </div>
+
+            <div class="space-y-2">
+              <label class="text-xs font-mono text-slate-400">Saída do Console & Feedback:</label>
+              <div id="ex8-console" class="h-48 bg-slate-900 border border-slate-800 rounded-xl p-3 font-mono text-xs text-emerald-400 overflow-y-auto">
+                <span class="text-slate-600 italic">// Clique em "Verificar Resposta" para testar...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Exercise 9 -->
+        <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+            <div>
+              <span class="text-xs font-mono text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-full border border-amber-500/20">Exercício 9 de 10</span>
+              <h3 class="text-lg font-bold text-white mt-2">Soma Total do Carrinho (Array.reduce)</h3>
+            </div>
+            <span id="ex9-status" class="text-xs font-mono px-3 py-1 rounded-full bg-slate-800 text-slate-400 border border-slate-700 w-max">
+              Pendente
+            </span>
+          </div>
+
+          <p class="text-slate-300 text-sm mb-4">
+            Use <code>.reduce()</code> com um callback acumulador para somar todos os valores do carrinho de compras.
+          </p>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div class="space-y-2">
+              <label class="text-xs font-mono text-slate-400">Seu Código:</label>
+              <textarea id="ex9-code" class="w-full h-48 bg-slate-900 border border-slate-800 rounded-xl p-3 font-mono text-xs text-amber-200 outline-none resize-none leading-relaxed" spellcheck="false">const carrinho = [25, 15, 60, 100];
+
+// Use .reduce((acumulador, item) => acumulador + item, 0):
+const total = carrinho.reduce((acc, item) => acc + item, 0);
+
+console.log("Total do carrinho: R$ " + total);</textarea>
+              <button onclick="runExercise(9)" class="w-full py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-lg transition shadow-md shadow-amber-500/20">
+                Verificar Resposta
+              </button>
+            </div>
+
+            <div class="space-y-2">
+              <label class="text-xs font-mono text-slate-400">Saída do Console & Feedback:</label>
+              <div id="ex9-console" class="h-48 bg-slate-900 border border-slate-800 rounded-xl p-3 font-mono text-xs text-emerald-400 overflow-y-auto">
+                <span class="text-slate-600 italic">// Clique em "Verificar Resposta" para testar...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Exercise 10 -->
+        <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+            <div>
+              <span class="text-xs font-mono text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-full border border-amber-500/20">Exercício 10 de 10</span>
+              <h3 class="text-lg font-bold text-white mt-2">Formatador de Texto Customizado</h3>
+            </div>
+            <span id="ex10-status" class="text-xs font-mono px-3 py-1 rounded-full bg-slate-800 text-slate-400 border border-slate-700 w-max">
+              Pendente
+            </span>
+          </div>
+
+          <p class="text-slate-300 text-sm mb-4">
+            Crie uma função <code>formatarTexto(frase, callbackFormatador)</code> que receba uma frase e retorne o resultado de chamar <code>callbackFormatador(frase)</code>.
+          </p>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div class="space-y-2">
+              <label class="text-xs font-mono text-slate-400">Seu Código:</label>
+              <textarea id="ex10-code" class="w-full h-48 bg-slate-900 border border-slate-800 rounded-xl p-3 font-mono text-xs text-amber-200 outline-none resize-none leading-relaxed" spellcheck="false">function emCaixaAlta(texto) {
+  return texto.toUpperCase() + "!!!";
+}
+
+function formatarTexto(frase, callbackFormatador) {
+  // Retorne o texto formatado pelo callbackFormatador:
+  return callbackFormatador(frase);
+}
+
+console.log(formatarTexto("aprender callbacks e divertido", emCaixaAlta));</textarea>
+              <button onclick="runExercise(10)" class="w-full py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-lg transition shadow-md shadow-amber-500/20">
+                Verificar Resposta
+              </button>
+            </div>
+
+            <div class="space-y-2">
+              <label class="text-xs font-mono text-slate-400">Saída do Console & Feedback:</label>
+              <div id="ex10-console" class="h-48 bg-slate-900 border border-slate-800 rounded-xl p-3 font-mono text-xs text-emerald-400 overflow-y-auto">
+                <span class="text-slate-600 italic">// Clique em "Verificar Resposta" para testar...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION 5: QUIZ FINAL -->
+    <section id="sec-quiz" class="hidden space-y-8 animate-fadeIn">
+      <div class="max-w-3xl mx-auto">
+        <div class="text-center mb-8">
+          <h2 class="text-3xl font-black text-white mb-2">Quiz de Fixação de Conhecimentos (20 Questões)</h2>
+          <p class="text-slate-400 text-sm">Testes abrangentes para validar seu domínio total sobre funções callback em JavaScript!</p>
+        </div>
+
+        <div id="quiz-container" class="space-y-6">
+          
+          <!-- Q1 -->
+          <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6">
+            <h3 class="text-base font-bold text-white mb-4">
+              1. O que é uma função de Callback em JavaScript?
+            </h3>
+            <div class="space-y-3 font-medium text-xs sm:text-sm">
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q1" value="a" class="accent-amber-400">
+                <span class="text-slate-300">Uma função especial que roda apenas quando dá erro na aplicação.</span>
+              </label>
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q1" value="b" class="accent-amber-400">
+                <span class="text-slate-300">Uma função passada como parâmetro para outra função, para ser executada posteriormente.</span>
+              </label>
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q1" value="c" class="accent-amber-400">
+                <span class="text-slate-300">Uma função que obrigatoriamente precisa retornar o número 0.</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Q2 -->
+          <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6">
+            <h3 class="text-base font-bold text-white mb-4">
+              2. Como devemos passar a função <code class="text-amber-300">minhaFuncao</code> como callback para <code class="text-amber-300">executar(cb)</code>?
+            </h3>
+            <div class="space-y-3 font-medium text-xs sm:text-sm">
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q2" value="a" class="accent-amber-400">
+                <span class="text-slate-300"><code>executar(minhaFuncao());</code></span>
+              </label>
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q2" value="b" class="accent-amber-400">
+                <span class="text-slate-300"><code>executar(minhaFuncao);</code></span>
+              </label>
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q2" value="c" class="accent-amber-400">
+                <span class="text-slate-300"><code>executar("minhaFuncao");</code></span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Q3 -->
+          <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6">
+            <h3 class="text-base font-bold text-white mb-4">
+              3. O que acontece se colocarmos parênteses ao passar uma função de callback, como em <code class="text-red-400">fazerAlgo(minhaFuncao())</code>?
+            </h3>
+            <div class="space-y-3 font-medium text-xs sm:text-sm">
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q3" value="a" class="accent-amber-400">
+                <span class="text-slate-300">A função é executada imediatamente e o seu <i>resultado</i> (retorno) é passado como argumento.</span>
+              </label>
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q3" value="b" class="accent-amber-400">
+                <span class="text-slate-300">Nada demais, o JavaScript reconhece automaticamente como a mesma coisa.</span>
+              </label>
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q3" value="c" class="accent-amber-400">
+                <span class="text-slate-300">A função é pausada para sempre.</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Q4 -->
+          <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6">
+            <h3 class="text-base font-bold text-white mb-4">
+              4. Por que dizemos que funções em JavaScript são "Cidadãs de Primeira Classe" (First-Class Citizens)?
+            </h3>
+            <div class="space-y-3 font-medium text-xs sm:text-sm">
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q4" value="a" class="accent-amber-400">
+                <span class="text-slate-300">Porque elas possuem prioridade de processamento no processador do computador.</span>
+              </label>
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q4" value="b" class="accent-amber-400">
+                <span class="text-slate-300">Porque podem ser tratadas como valores: salvas em variáveis, passadas como parâmetros e retornadas por outras funções.</span>
+              </label>
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q4" value="c" class="accent-amber-400">
+                <span class="text-slate-300">Porque são exclusivas de navegadores web e não funcionam em servidores.</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Q5 -->
+          <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6">
+            <h3 class="text-base font-bold text-white mb-4">
+              5. No método <code class="text-amber-300">array.forEach(callback)</code>, quantas vezes a função de callback é executada?
+            </h3>
+            <div class="space-y-3 font-medium text-xs sm:text-sm">
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q5" value="a" class="accent-amber-400">
+                <span class="text-slate-300">Apenas 1 vez, para o primeiro elemento da lista.</span>
+              </label>
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q5" value="b" class="accent-amber-400">
+                <span class="text-slate-300">Uma vez para cada elemento presente no array.</span>
+              </label>
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q5" value="c" class="accent-amber-400">
+                <span class="text-slate-300">Exatamente duas vezes por padrão.</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Q6 -->
+          <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6">
+            <h3 class="text-base font-bold text-white mb-4">
+              6. Qual a principal diferença entre o <code class="text-amber-300">.map()</code> e o <code class="text-amber-300">.forEach()</code>?
+            </h3>
+            <div class="space-y-3 font-medium text-xs sm:text-sm">
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q6" value="a" class="accent-amber-400">
+                <span class="text-slate-300">O <code>forEach</code> altera o HTML diretamente, enquanto o <code>map</code> altera apenas o CSS.</span>
+              </label>
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q6" value="b" class="accent-amber-400">
+                <span class="text-slate-300">O <code>.map()</code> constrói e retorna um NOVO array transformado pelos callbacks, enquanto o <code>.forEach()</code> apenas itera sem retornar um novo array.</span>
+              </label>
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q6" value="c" class="accent-amber-400">
+                <span class="text-slate-300">Não há diferença nenhuma, são sinônimos exatos.</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Q7 -->
+          <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6">
+            <h3 class="text-base font-bold text-white mb-4">
+              7. Como funciona o callback na função nativa <code class="text-amber-300">setTimeout(callback, tempo)</code>?
+            </h3>
+            <div class="space-y-3 font-medium text-xs sm:text-sm">
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q7" value="a" class="accent-amber-400">
+                <span class="text-slate-300">Executa o callback repetidamente em um loop infinito.</span>
+              </label>
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q7" value="b" class="accent-amber-400">
+                <span class="text-slate-300">Aguarda o tempo especificado (em milissegundos) e depois executa o callback UMA única vez.</span>
+              </label>
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q7" value="c" class="accent-amber-400">
+                <span class="text-slate-300">Bloqueia e congela o navegador enquanto aguarda o tempo passar.</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Q8 -->
+          <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6">
+            <h3 class="text-base font-bold text-white mb-4">
+              8. Qual função temporizadora é ideal para criar loops temporizados contínuos (ex: relógio)?
+            </h3>
+            <div class="space-y-3 font-medium text-xs sm:text-sm">
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q8" value="a" class="accent-amber-400">
+                <span class="text-slate-300"><code>setInterval(callback, intervalo)</code></span>
+              </label>
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q8" value="b" class="accent-amber-400">
+                <span class="text-slate-300"><code>setTimeout(callback, intervalo)</code></span>
+              </label>
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q8" value="c" class="accent-amber-400">
+                <span class="text-slate-300"><code>delay(callback)</code></span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Q9 -->
+          <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6">
+            <h3 class="text-base font-bold text-white mb-4">
+              9. Em <code class="text-amber-300">elemento.addEventListener('click', callback)</code>, quando o callback é disparado?
+            </h3>
+            <div class="space-y-3 font-medium text-xs sm:text-sm">
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q9" value="a" class="accent-amber-400">
+                <span class="text-slate-300">Imediatamente no momento em que o código é lido pelo navegador.</span>
+              </label>
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q9" value="b" class="accent-amber-400">
+                <span class="text-slate-300">Sempre e cada vez que o evento de clique for acionado pelo usuário naquele elemento.</span>
+              </label>
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q9" value="c" class="accent-amber-400">
+                <span class="text-slate-300">Somente quando o usuário fecha a aba do navegador.</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Q10 -->
+          <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6">
+            <h3 class="text-base font-bold text-white mb-4">
+              10. O que é um "Callback Anônimo"?
+            </h3>
+            <div class="space-y-3 font-medium text-xs sm:text-sm">
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q10" value="a" class="accent-amber-400">
+                <span class="text-slate-300">Uma função inline declarada diretamente dentro dos argumentos, sem ter um nome prévio (ex: <code>function() { ... }</code>).</span>
+              </label>
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q10" value="b" class="accent-amber-400">
+                <span class="text-slate-300">Uma função secreta que oculta dados do desenvolvedor.</span>
+              </label>
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q10" value="c" class="accent-amber-400">
+                <span class="text-slate-300">Uma função que não pode receber argumentos.</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Q11 -->
+          <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6">
+            <h3 class="text-base font-bold text-white mb-4">
+              11. Como uma Arrow Function <code class="text-amber-300">(item) => item * 2</code> se relaciona com Callbacks?
+            </h3>
+            <div class="space-y-3 font-medium text-xs sm:text-sm">
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q11" value="a" class="accent-amber-400">
+                <span class="text-slate-300">Arrow functions não podem ser usadas como callbacks em hipótese alguma.</span>
+              </label>
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q11" value="b" class="accent-amber-400">
+                <span class="text-slate-300">Elas fornecem uma sintaxe muito mais enxuta e moderna para escrever callbacks anônimos.</span>
+              </label>
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q11" value="c" class="accent-amber-400">
+                <span class="text-slate-300">Servem apenas para cálculos matemáticos.</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Q12 -->
+          <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6">
+            <h3 class="text-base font-bold text-white mb-4">
+              12. O que é o problema conhecido como "Callback Hell" (Inferno de Callbacks)?
+            </h3>
+            <div class="space-y-3 font-medium text-xs sm:text-sm">
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q12" value="a" class="accent-amber-400">
+                <span class="text-slate-300">Um erro de compilação que faz o navegador reiniciar.</span>
+              </label>
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q12" value="b" class="accent-amber-400">
+                <span class="text-slate-300">O aninhamento excessivo de múltiplos callbacks dentro de outros callbacks (formando uma pirâmide difícil de ler).</span>
+              </label>
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q12" value="c" class="accent-amber-400">
+                <span class="text-slate-300">Quando a função de callback consome toda a memória RAM.</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Q13 -->
+          <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6">
+            <h3 class="text-base font-bold text-white mb-4">
+              13. No método <code class="text-amber-300">Array.filter(callback)</code>, o que o callback precisa retornar para MANTER o item na lista final?
+            </h3>
+            <div class="space-y-3 font-medium text-xs sm:text-sm">
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q13" value="a" class="accent-amber-400">
+                <span class="text-slate-300">O número do índice do item.</span>
+              </label>
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q13" value="b" class="accent-amber-400">
+                <span class="text-slate-300">Um valor verdadeiro (<code>true</code>) ou avaliado como verdadeiro (truthy).</span>
+              </label>
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q13" value="c" class="accent-amber-400">
+                <span class="text-slate-300">A palavra <code>"salvar"</code>.</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Q14 -->
+          <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6">
+            <h3 class="text-base font-bold text-white mb-4">
+              14. No método <code class="text-amber-300">Array.find(callback)</code>, o que acontece quando o callback retorna <code class="text-emerald-400">true</code> pela primeira vez?
+            </h3>
+            <div class="space-y-3 font-medium text-xs sm:text-sm">
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q14" value="a" class="accent-amber-400">
+                <span class="text-slate-300">O método continua procurando e retorna todos os elementos correspondentes.</span>
+              </label>
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q14" value="b" class="accent-amber-400">
+                <span class="text-slate-300">O método interrompe a busca imediatamente e retorna AQUELE primeiro elemento encontrado.</span>
+              </label>
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q14" value="c" class="accent-amber-400">
+                <span class="text-slate-300">Apaga o elemento do array original.</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Q15 -->
+          <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6">
+            <h3 class="text-base font-bold text-white mb-4">
+              15. Em <code class="text-amber-300">Array.sort((a, b) => a - b)</code>, o que indica quando a função callback retorna um número negativo?
+            </h3>
+            <div class="space-y-3 font-medium text-xs sm:text-sm">
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q15" value="a" class="accent-amber-400">
+                <span class="text-slate-300">Indica que o elemento <code>a</code> deve ser posicionado ANTES do elemento <code>b</code>.</span>
+              </label>
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q15" value="b" class="accent-amber-400">
+                <span class="text-slate-300">Indica que o elemento <code>b</code> deve ser removido do array.</span>
+              </label>
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q15" value="c" class="accent-amber-400">
+                <span class="text-slate-300">Indica que os dois valores são exatamente idênticos.</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Q16 -->
+          <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6">
+            <h3 class="text-base font-bold text-white mb-4">
+              16. Para que serve o argumento "acumulador" no callback do <code class="text-amber-300">Array.reduce((acc, item) => ...)</code>?
+            </h3>
+            <div class="space-y-3 font-medium text-xs sm:text-sm">
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q16" value="a" class="accent-amber-400">
+                <span class="text-slate-300">Ele mantém o valor acumulado retornado na iteração anterior do callback.</span>
+              </label>
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q16" value="b" class="accent-amber-400">
+                <span class="text-slate-300">Armazena o total de erros do script.</span>
+              </label>
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q16" value="c" class="accent-amber-400">
+                <span class="text-slate-300">É apenas um parâmetro opcional que sempre vale zero.</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Q17 -->
+          <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6">
+            <h3 class="text-base font-bold text-white mb-4">
+              17. Qual método de array retorna <code class="text-emerald-400">true</code> se pelo menos UM item satisfazer a condição do callback?
+            </h3>
+            <div class="space-y-3 font-medium text-xs sm:text-sm">
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q17" value="a" class="accent-amber-400">
+                <span class="text-slate-300"><code>Array.every()</code></span>
+              </label>
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q17" value="b" class="accent-amber-400">
+                <span class="text-slate-300"><code>Array.some()</code></span>
+              </label>
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q17" value="c" class="accent-amber-400">
+                <span class="text-slate-300"><code>Array.push()</code></span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Q18 -->
+          <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6">
+            <h3 class="text-base font-bold text-white mb-4">
+              18. O método <code class="text-amber-300">Array.every()</code> só retorna <code class="text-emerald-400">true</code> se:
+            </h3>
+            <div class="space-y-3 font-medium text-xs sm:text-sm">
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q18" value="a" class="accent-amber-400">
+                <span class="text-slate-300">TODOS os elementos do array passarem no teste da função callback.</span>
+              </label>
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q18" value="b" class="accent-amber-400">
+                <span class="text-slate-300">Apenas o primeiro elemento for positivo.</span>
+              </label>
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q18" value="c" class="accent-amber-400">
+                <span class="text-slate-300">O array contiver números pares.</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Q19 -->
+          <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6">
+            <h3 class="text-base font-bold text-white mb-4">
+              19. O que caracteriza a execução "Síncrona" de um callback (ex: em <code class="text-amber-300">.map()</code> ou <code class="text-amber-300">.forEach()</code>)?
+            </h3>
+            <div class="space-y-3 font-medium text-xs sm:text-sm">
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q19" value="a" class="accent-amber-400">
+                <span class="text-slate-300">O callback roda de forma imediata durante o fluxo de execução principal, sem esperar temporizadores ou eventos.</span>
+              </label>
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q19" value="b" class="accent-amber-400">
+                <span class="text-slate-300">O callback é enviado para um servidor remoto para ser calculado.</span>
+              </label>
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q19" value="c" class="accent-amber-400">
+                <span class="text-slate-300">O callback aguarda a conexão com a internet ser restabelecida.</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Q20 -->
+          <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6">
+            <h3 class="text-base font-bold text-white mb-4">
+              20. Qual a grande vantagem de criar funções que recebem dois callbacks (<code class="text-amber-300">aoSucesso</code> e <code class="text-amber-300">aoErro</code>)?
+            </h3>
+            <div class="space-y-3 font-medium text-xs sm:text-sm">
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q20" value="a" class="accent-amber-400">
+                <span class="text-slate-300">Dobra a velocidade de processamento da CPU.</span>
+              </label>
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q20" value="b" class="accent-amber-400">
+                <span class="text-slate-300">Permite separar com clareza a ação de sucesso do fluxo de tratamento de erros.</span>
+              </label>
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer transition">
+                <input type="radio" name="q20" value="c" class="accent-amber-400">
+                <span class="text-slate-300">É uma exigência obrigatória para o código funcionar no Chrome.</span>
+              </label>
+            </div>
+          </div>
+
+          <button onclick="evaluateQuiz()" class="w-full py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-sm rounded-xl transition shadow-lg shadow-amber-500/20">
+            Finalizar e Ver Pontuação
+          </button>
+
+          <div id="quiz-result" class="hidden p-6 bg-slate-900 border border-slate-800 rounded-2xl text-center">
+            <div id="quiz-score-badge" class="text-3xl font-black text-amber-400 mb-2">0/20</div>
+            <p id="quiz-message" class="text-sm text-slate-300 mb-4"></p>
+            <button onclick="resetQuiz()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 rounded-lg">
+              Tentar Novamente
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- JavaScript separado por responsabilidade. -->
+  <script src="navigation.js"></script>
+  <script src="simulation.js"></script>
+  <script src="playground.js"></script>
+  <script src="exercises.js"></script>
+  <script src="quiz.js"></script>
+  <script src="app.js"></script>
+
+</body>
+</html>

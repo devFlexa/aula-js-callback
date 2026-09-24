@@ -1,0 +1,30 @@
+/* Custom scrollbars and sleek code editor styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+.code-editor {
+  tab-size: 2;
+}
+@keyframes pulseGlow {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+.animate-pulse-glow {
+  animation: pulseGlow 3s infinite ease-in-out;
+}
