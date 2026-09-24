@@ -10,7 +10,7 @@
         if (t === tabId) {
           sec.classList.remove('hidden');
           if (tabBtn) {
-            tabBtn.className = "px-4 py-1.5 rounded-lg transition-all text-amber-400 bg-slate-800 shadow font-semibold";
+            tabBtn.className = "px-2.5 py-2 whitespace-nowrap rounded-lg transition-all text-amber-400 bg-slate-800 shadow font-semibold";
           }
           if (mobBtn) {
             mobBtn.className = "px-3 py-1.5 rounded-lg bg-slate-800 text-amber-400 whitespace-nowrap font-semibold";
@@ -18,7 +18,7 @@
         } else {
           sec.classList.add('hidden');
           if (tabBtn) {
-            tabBtn.className = "px-4 py-1.5 rounded-lg transition-all text-slate-400 hover:text-slate-200";
+            tabBtn.className = "px-2.5 py-2 whitespace-nowrap rounded-lg transition-all text-slate-400 hover:text-slate-200";
           }
           if (mobBtn) {
             mobBtn.className = "px-3 py-1.5 rounded-lg bg-slate-900 text-slate-400 whitespace-nowrap";
