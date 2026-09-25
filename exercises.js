@@ -35,7 +35,8 @@
           passed = logs.some(l => l.includes('Aluno: Ana')) && logs.some(l => l.includes('Aluno: Carlos'));
           feedback = passed ? "✨ Excelente! Você passou a lista e a função callback com sucesso!" : "💡 Dica: Lembre-se de chamar 'processarLista(alunos, formatarNome);' sem parênteses na função callback.";
         } else if (num === 3) {
-          passed = code.includes('setTimeout') && code.includes('callbackFinal');
+          const executableCode = code.replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '');
+          passed = /setTimeout\s*\(/.test(executableCode) && /callbackFinal\s*\(/.test(executableCode);
           feedback = passed ? "✨ Perfeito! O callback foi engrenado com o setTimeout!" : "💡 Dica: Use 'setTimeout(function() { callbackFinal(...); }, 1000);'";
         } else if (num === 4) {
           passed = logs.some(l => l.includes('2') && l.includes('4') && l.includes('6'));

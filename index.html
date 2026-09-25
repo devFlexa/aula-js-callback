@@ -524,8 +524,7 @@ function somar(n1, n2) {
 }
 
 function executarOperacao(a, b, operacaoCallback) {
-  // SEU CÓDIGO AQUI: chame operacaoCallback com os parâmetros a e b
-  return operacaoCallback(a, b);
+  // SEU CÓDIGO AQUI: retorne o resultado de operacaoCallback(a, b)
 }
 
 // Teste:
@@ -576,7 +575,7 @@ function processarLista(lista, callback) {
 const alunos = ["Ana", "Carlos", "Beatriz"];
 
 // Chame processarLista enviando 'alunos' e 'formatarNome':
-processarLista(alunos, formatarNome);</textarea>
+</textarea>
               <button onclick="runExercise(2)" class="w-full py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-lg transition shadow-md shadow-amber-500/20">
                 Verificar Resposta
               </button>
@@ -613,10 +612,7 @@ processarLista(alunos, formatarNome);</textarea>
               <textarea id="ex3-code" class="w-full h-48 bg-slate-900 border border-slate-800 rounded-xl p-3 font-mono text-xs text-amber-200 outline-none resize-none leading-relaxed" spellcheck="false">function baixarArquivo(nomeArquivo, callbackFinal) {
   console.log("Iniciando download...");
   
-  // Use setTimeout para esperar 1000ms e depois chamar callbackFinal:
-  setTimeout(function() {
-    callbackFinal("Download de " + nomeArquivo + " concluído!");
-  }, 1000);
+  // SEU CÓDIGO AQUI: use setTimeout e chame callbackFinal após 1 segundo
 }
 
 baixarArquivo("aula1.pdf", function(mensagem) {
@@ -662,10 +658,7 @@ baixarArquivo("aula1.pdf", function(mensagem) {
 function filtrarNumeros(lista, callbackCondicao) {
   const resultado = [];
   for (let i = 0; i < lista.length; i++) {
-    // Chame callbackCondicao(lista[i]) e adicione ao resultado se der true:
-    if (callbackCondicao(lista[i])) {
-      resultado.push(lista[i]);
-    }
+    // SEU CÓDIGO AQUI: teste callbackCondicao e adicione os itens aprovados
   }
   return resultado;
 }
@@ -708,7 +701,7 @@ console.log(filtrarNumeros(numeros, ePar));</textarea>
               <textarea id="ex5-code" class="w-full h-48 bg-slate-900 border border-slate-800 rounded-xl p-3 font-mono text-xs text-amber-200 outline-none resize-none leading-relaxed" spellcheck="false">const precos = [100, 200, 50, 300];
 
 // Use precos.map(...) com um callback que retorna o preco com 10% de desconto (preco * 0.9):
-const precosComDesconto = precos.map(preco => preco * 0.9);
+const precosComDesconto = precos.map(preco => /* aplique 10% de desconto */ preco);
 
 console.log(precosComDesconto);</textarea>
               <button onclick="runExercise(5)" class="w-full py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-lg transition shadow-md shadow-amber-500/20">
@@ -745,11 +738,7 @@ console.log(precosComDesconto);</textarea>
             <div class="space-y-2">
               <label class="text-xs font-mono text-slate-400">Seu Código:</label>
               <textarea id="ex6-code" class="w-full h-52 bg-slate-900 border border-slate-800 rounded-xl p-3 font-mono text-xs text-amber-200 outline-none resize-none leading-relaxed" spellcheck="false">function validarEmail(email, callbackSucesso, callbackErro) {
-  if (email.includes("@")) {
-    callbackSucesso("Email válido!");
-  } else {
-    callbackErro("Email inválido!");
-  }
+  // SEU CÓDIGO AQUI: escolha o callback com base na presença de "@"
 }
 
 function aoSucesso(msg) { console.log("✅ SUCESSO: " + msg); }
@@ -798,7 +787,7 @@ validarEmail("emailsemarroba.com", aoSucesso, aoErro);</textarea>
 ];
 
 // Use usuarios.find com um callback que retorna true quando u.id === 2:
-const usuarioEncontrado = usuarios.find(u => u.id === 2);
+const usuarioEncontrado = usuarios.find(u => /* teste se o id é 2 */ false);
 
 console.log(usuarioEncontrado);</textarea>
               <button onclick="runExercise(7)" class="w-full py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-lg transition shadow-md shadow-amber-500/20">
@@ -841,7 +830,6 @@ console.log(usuarioEncontrado);</textarea>
 ];
 
 // Ordene os produtos do menor preco para o maior:
-produtos.sort((a, b) => a.preco - b.preco);
 
 console.log(produtos);</textarea>
               <button onclick="runExercise(8)" class="w-full py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-lg transition shadow-md shadow-amber-500/20">
@@ -880,7 +868,7 @@ console.log(produtos);</textarea>
               <textarea id="ex9-code" class="w-full h-48 bg-slate-900 border border-slate-800 rounded-xl p-3 font-mono text-xs text-amber-200 outline-none resize-none leading-relaxed" spellcheck="false">const carrinho = [25, 15, 60, 100];
 
 // Use .reduce((acumulador, item) => acumulador + item, 0):
-const total = carrinho.reduce((acc, item) => acc + item, 0);
+const total = carrinho.reduce((acc, item) => /* some o item ao acumulador */ acc, 0);
 
 console.log("Total do carrinho: R$ " + total);</textarea>
               <button onclick="runExercise(9)" class="w-full py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-lg transition shadow-md shadow-amber-500/20">
@@ -921,8 +909,7 @@ console.log("Total do carrinho: R$ " + total);</textarea>
 }
 
 function formatarTexto(frase, callbackFormatador) {
-  // Retorne o texto formatado pelo callbackFormatador:
-  return callbackFormatador(frase);
+  // SEU CÓDIGO AQUI: retorne o resultado de callbackFormatador(frase)
 }
 
 console.log(formatarTexto("aprender callbacks e divertido", emCaixaAlta));</textarea>
